@@ -54,9 +54,16 @@ namespace KonnectUI.Entities.Bluetooth
 
         public override void Connect()
         {
-            selectedDevice = SelectDevice();
-            Name = selectedDevice.DeviceName;
-            OnConnect(this, new ConnectEventArgs("Success"));
+            try
+            {
+                selectedDevice = SelectDevice();
+                Name = selectedDevice.DeviceName;
+                OnConnect(this, new ConnectEventArgs("Success"));
+
+            } catch (Exception)
+            {
+                MessageBox.Show("No device was selected.", "Skipping Device");
+            }
 
         }
 

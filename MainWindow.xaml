@@ -17,6 +17,9 @@
                 <TextBlock FontSize="11">
                     <Run Text="{Binding Type}" FontWeight="Bold" Foreground="White"/> | <Run Text="{Binding Status}" FontWeight="Bold" Foreground="White"/>
                 </TextBlock>
+                <TextBlock FontSize="11">
+                    <Run Text="{Binding Address}" FontWeight="Bold" Foreground="White"/>
+                </TextBlock>
 
             </StackPanel>
         </DataTemplate>
@@ -57,10 +60,10 @@
             
             <TextBlock  Grid.Column="0" Grid.Row="0" Text="Red Interface" TextAlignment="Left" FontSize="60" FontWeight="Thin" Margin="20" />
             <local1:DeviceItem Grid.Column="0" Grid.Row="1" Title="Microsoft HoloLens" Icon="&#xF119;"></local1:DeviceItem>
-            <local1:DeviceItem Grid.Column="1" Grid.Row="1" Title="Microsoft Kinect" Icon="&#xE990;" OnButtonClick="AddKinect"></local1:DeviceItem>
-            <local1:DeviceItem Grid.Column="0" Grid.Row="2" Title="Myo Armband" Icon="&#xE75E;"></local1:DeviceItem>
+            <local1:DeviceItem Grid.Column="1" Grid.Row="1" Title="Microsoft Kinect" Icon="&#xE990;"></local1:DeviceItem>
+            <local1:DeviceItem Grid.Column="0" Grid.Row="2" Title="Myo Armband" Icon="&#xE75E;" OnButtonClick="AddMyo"></local1:DeviceItem>
             <local1:DeviceItem Grid.Column="1" Grid.Row="2" Title="BBC Micro:bit" Icon="&#xF260;" OnButtonClick="AddMicroBit"></local1:DeviceItem>
-            <local1:DeviceItem Grid.Column="0" Grid.Row="3" Title="BluetoothLE Devices" Icon="&#xE702;"></local1:DeviceItem>
+            <local1:DeviceItem Grid.Column="0" Grid.Row="3" Title="BluetoothLE Devices" Icon="&#xE702;" OnButtonClick="AddBluetoothLE"></local1:DeviceItem>
             <local1:DeviceItem Grid.Column="1" Grid.Row="3" Title="Bluetooth Devices" Icon="&#xE702;" OnButtonClick="AddBluetooth"></local1:DeviceItem>
         </Grid>
     </Grid>

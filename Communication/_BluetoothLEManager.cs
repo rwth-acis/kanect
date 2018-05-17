@@ -12,11 +12,11 @@ using Windows.Storage.Streams;
 
 namespace KonnectUI.Entities.Bluetooth
 {
-    class BluetoothLEManager : Source
+    class _BluetoothLEManager : Source
     {
         private GattCharacteristic characteristic;
 
-        public BluetoothLEManager()
+        public _BluetoothLEManager()
         {
             Type = "BluetoothLE";
             

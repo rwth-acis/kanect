@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Threading;
 using Windows.Devices.Bluetooth;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
@@ -41,7 +42,16 @@ namespace KonnectUI.Communication
 
         public IReadOnlyList<GattCharacteristic> GetCharacteristics(GattDeviceService service)
         {
-            return service.GetAllCharacteristics();
+            try
+            {
+                return service.GetAllCharacteristics();
+            }
+            catch (System.IO.FileLoadException)
+            {
+                MessageBox.Show("Seems like Device is already in use.", "Wait Sparky!!!");
+            }
+
+            return Array.Empty<GattCharacteristic>();
         }
 
         public async Task<Boolean> PerformAction(GattCharacteristic characteristic, TypedEventHandler<GattCharacteristic, GattValueChangedEventArgs> OnValueChanged)
@@ -65,7 +75,7 @@ namespace KonnectUI.Communication
         {
             deviceWatcher =
                     DeviceInformation.CreateWatcher(
-                                BluetoothLEDevice.GetDeviceSelectorFromPairingState(true),
+                                BluetoothLEDevice.GetDeviceSelectorFromPairingState(false),
                                 requestedProperties,
                                 DeviceInformationKind.AssociationEndpoint);
 
