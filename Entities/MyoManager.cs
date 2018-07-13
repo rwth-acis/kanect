@@ -10,6 +10,8 @@ namespace KonnectUI.Entities
 {
     class MyoManager : Source
     {
+        string Acc, Gyro, EMG;
+
         IChannel myoChannel;
         IHub myoHub;
         bool streamData = false;
@@ -45,7 +47,7 @@ namespace KonnectUI.Entities
         {
             if(streamData == true)
             {
-                Publish("i5/myo/pose", e.Timestamp.ToString() + "," + e.Myo.Pose.ToString());
+                Publish("/i5/myo/pose", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString() + "," + e.Myo.Pose.ToString());
             }
         }
 
@@ -59,7 +61,7 @@ namespace KonnectUI.Entities
                 var pitch = (int)((e.Pitch + PI) / (PI * 2.0f) * 10);
                 var yaw = (int)((e.Yaw + PI) / (PI * 2.0f) * 10);
 
-                Publish("i5/myo/orientation", e.Timestamp.ToString() + "," + roll.ToString() + "," + pitch.ToString() + "," + yaw.ToString());
+                Publish("/i5/myo/orientation", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString() + "," + roll.ToString() + "," + pitch.ToString() + "," + yaw.ToString());
             }
         }
 
@@ -67,7 +69,9 @@ namespace KonnectUI.Entities
         {
             if (streamData == true)
             {
-                Publish("i5/myo/gyroscope", e.Timestamp.ToString() + "," + e.Gyroscope.X + "," + e.Gyroscope.Y.ToString() + "," + e.Gyroscope.Z.ToString());
+                
+                Publish("/i5/myo/full", EMG + "," + Acc + "," + DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString() + "," + e.Gyroscope.X + "," + e.Gyroscope.Y.ToString() + "," + e.Gyroscope.Z.ToString());
+                Publish("/i5/myo/gyroscope", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString() + "," + e.Gyroscope.X + "," + e.Gyroscope.Y.ToString() + "," + e.Gyroscope.Z.ToString());
             }
         }
 
@@ -81,7 +85,9 @@ namespace KonnectUI.Entities
                     tmpEmg += "," + e.EmgData.GetDataForSensor(i).ToString();
                 }
 
-                Publish("i5/myo/emg", e.Timestamp.ToString() + "," + tmpEmg);
+
+                EMG = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString() + tmpEmg;
+                Publish("/i5/myo/emg", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString() + tmpEmg);
             }
         }
 
@@ -89,7 +95,8 @@ namespace KonnectUI.Entities
         {
             if (streamData == true)
             {
-                Publish("i5/myo/accelerometer", e.Timestamp.ToString() + "," + e.Accelerometer.X.ToString() + "," + e.Accelerometer.Y.ToString() + "," + e.Accelerometer.Z.ToString());
+                Acc = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString() + "," + e.Accelerometer.X.ToString() + "," + e.Accelerometer.Y.ToString() + "," + e.Accelerometer.Z.ToString();
+                Publish("/i5/myo/accelerometer", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString() + "," + e.Accelerometer.X.ToString() + "," + e.Accelerometer.Y.ToString() + "," + e.Accelerometer.Z.ToString());
             }
         }
 

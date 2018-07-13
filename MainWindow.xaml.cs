@@ -60,11 +60,14 @@ namespace KonnectUI
 
         private void ListDevices_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            addedDevices[listDevices.SelectedIndex].BeginReading();
-            addedDevices[listDevices.SelectedIndex].Status = "Transmitting";
-            addedDevices[listDevices.SelectedIndex].Index = listDevices.SelectedIndex.ToString();
-            listDevices.ItemsSource = addedDevices;
-            listDevices.Items.Refresh();
+            if(addedDevices.Count > 0)
+            {
+                addedDevices[listDevices.SelectedIndex].BeginReading();
+                addedDevices[listDevices.SelectedIndex].Status = "Transmitting";
+                addedDevices[listDevices.SelectedIndex].Index = listDevices.SelectedIndex.ToString();
+                listDevices.ItemsSource = addedDevices;
+                listDevices.Items.Refresh();
+            }
         }
 
         private void AddBluetoothLE(object sender, RoutedEventArgs e)
@@ -159,8 +162,29 @@ namespace KonnectUI
 
             MyoManager myoManager = new MyoManager();
             myoManager.OnConnect += OnMyoConnect;
+            myoManager.OnDisconnect += OnMyoDisconnect;
             myoManager.Connect();
 
+        }
+
+        private void OnMyoDisconnect(object sender, ConnectEventArgs e)
+        {
+            if (e.Status == "Success")
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    var myoManager = (MyoManager)sender;
+                    addedDevices.Remove(myoManager);
+                    listDevices.ItemsSource = addedDevices;
+                    listDevices.Items.Refresh();
+
+                });
+                //myoManager.BeginReading();
+            }
+            else
+            {
+                Console.WriteLine(e.Message);
+            }
         }
 
         private void OnMyoConnect(object sender, ConnectEventArgs e)
@@ -168,11 +192,14 @@ namespace KonnectUI
 
             if (e.Status == "Success")
             {
-                var myoManager = (MyoManager)sender;
-                addedDevices.Add(myoManager);
-                //listDevices.ItemsSource = addedDevices;
-                //listDevices.Items.Refresh();
-                myoManager.BeginReading();
+                Dispatcher.Invoke(() =>
+                {
+                    var myoManager = (MyoManager)sender;
+                    addedDevices.Add(myoManager);
+                    listDevices.ItemsSource = addedDevices;
+                    listDevices.Items.Refresh();
+                });
+                //myoManager.BeginReading();
             }
             else
             {

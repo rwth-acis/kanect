@@ -18,7 +18,7 @@ namespace KonnectUI.Common
 
         public MQTTManager()
         {
-            mqttClient = new MqttClient("cloud11.dbis.rwth-aachen.de");
+            mqttClient = new MqttClient("iot.eclipse.org");
             mqttClient.Connect(Guid.NewGuid().ToString());
         }
 
@@ -26,7 +26,7 @@ namespace KonnectUI.Common
         {
             try
             {
-                MqttClient mqttClient = new MqttClient("cloud11.dbis.rwth-aachen.de");
+                MqttClient mqttClient = new MqttClient("iot.eclipse.org");
                 mqttClient.Connect(Guid.NewGuid().ToString());
                 mqttClient.Disconnect();
             }
