@@ -23,6 +23,7 @@ using KonnectUI.Entities;
 using MyoSharp.Communication;
 using MyoSharp.Device;
 using MyoSharp.Exceptions;
+using System.Threading;
 
 namespace KonnectUI
 {
@@ -34,14 +35,48 @@ namespace KonnectUI
         private List<Source> addedDevices = new List<Source>();
         private BluetoothManager bluetoothManager;
         private short microBitIndex = 0;
+        private Timer SensorClock;
+        private int Tick = 0;
+        private int Threashold = 2;
+        private bool isMyoExists = false;
 
         public Enuminator Enuminator { get; private set; }
 
         public MainWindow()
         {
             InitializeComponent();
-            MQTTManager.TestConnection();            
+
+            MQTTManager.TestConnection();
+            SensorClock = new Timer(new TimerCallback((state) =>
+            {
+                ++Tick;
+                if (addedDevices.Count > 0)
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        for(var i = 0; i < addedDevices.Count; i++)
+                        {
+                            addedDevices[i].CurrentTick = Tick;
+                            Console.WriteLine(Tick.ToString() + "::" + addedDevices[i].LastTransmissionTick.ToString());
+                            if (Tick - addedDevices[i].LastTransmissionTick > Threashold && addedDevices[i].Status == "Transmitting")
+                            {
+                                EndTransmission(i, "Paused");
+                            }else if(Tick - addedDevices[i].LastTransmissionTick > Threashold && addedDevices[i].Status == "Paused")
+                            {
+                                addedDevices[i].BeginReading();
+                            } else if(Tick - addedDevices[i].LastTransmissionTick <= Threashold && addedDevices[i].Status == "Paused")
+                            {
+                                StartTransmission(i, "Transmitting");
+                            }
+                        }
+                    });
+                }
+            }));
+
+            SensorClock.Change(0, 5000);
         }
+
+
 
         private void Bluetooth_DeviceConnnect(object sender, RoutedEventArgs e)
         {
@@ -60,13 +95,22 @@ namespace KonnectUI
 
         private void ListDevices_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if(addedDevices.Count > 0)
+            
+        }
+
+        private void listDevices_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (addedDevices.Count > 0 && listDevices.SelectedIndex >= 0)
             {
-                addedDevices[listDevices.SelectedIndex].BeginReading();
-                addedDevices[listDevices.SelectedIndex].Status = "Transmitting";
-                addedDevices[listDevices.SelectedIndex].Index = listDevices.SelectedIndex.ToString();
-                listDevices.ItemsSource = addedDevices;
-                listDevices.Items.Refresh();
+                if(addedDevices[listDevices.SelectedIndex].Status == "Transmitting" || addedDevices[listDevices.SelectedIndex].Status == "Paused")
+                {
+                    EndTransmission(listDevices.SelectedIndex, "Connected");
+
+                } else
+                {
+                    StartTransmission(listDevices.SelectedIndex, "Transmitting");
+                }
+                
             }
         }
 
@@ -171,15 +215,15 @@ namespace KonnectUI
         {
             if (e.Status == "Success")
             {
-                Dispatcher.Invoke(() =>
+                /*Dispatcher.Invoke(() =>
                 {
                     var myoManager = (MyoManager)sender;
                     addedDevices.Remove(myoManager);
+                    myoManager.Status = "Paused";
                     listDevices.ItemsSource = addedDevices;
                     listDevices.Items.Refresh();
 
-                });
-                //myoManager.BeginReading();
+                });*/
             }
             else
             {
@@ -194,10 +238,24 @@ namespace KonnectUI
             {
                 Dispatcher.Invoke(() =>
                 {
-                    var myoManager = (MyoManager)sender;
-                    addedDevices.Add(myoManager);
-                    listDevices.ItemsSource = addedDevices;
-                    listDevices.Items.Refresh();
+                    if (isMyoExists == true)
+                    {
+                        for(int i = 0; i < addedDevices.Count; i++)
+                        {
+                            if(addedDevices[i].Type == "Myo")
+                            {
+                                StartTransmission(i, "Transmitting");
+                            }
+                        }
+                    } else
+                    {
+                        var myoManager = (MyoManager)sender;
+                        myoManager.CurrentTick = Tick;
+                        addedDevices.Add(myoManager);
+                        listDevices.ItemsSource = addedDevices;
+                        listDevices.Items.Refresh();
+                    }
+                    isMyoExists = true;
                 });
                 //myoManager.BeginReading();
             }
@@ -207,6 +265,26 @@ namespace KonnectUI
             }
 
 
+        }
+
+        private void StartTransmission(int index, string status)
+        {
+            addedDevices[index].BeginReading();
+            ChangeStatus(index, status);
+        }
+
+        private void EndTransmission(int index, string status)
+        {
+            addedDevices[index].EndReading();
+            ChangeStatus(index, status);
+        }
+
+        private void ChangeStatus(int index, string status)
+        {
+            addedDevices[index].Status = status;
+            addedDevices[index].Index = listDevices.SelectedIndex.ToString();
+            listDevices.ItemsSource = addedDevices;
+            listDevices.Items.Refresh();
         }
     }
 }

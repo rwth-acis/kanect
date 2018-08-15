@@ -116,5 +116,10 @@ namespace KonnectUI.Entities.Bluetooth
                 //Console.WriteLine(Encoding.ASCII.GetString(fromBluetooth));
             }
         }
+
+        public override void EndReading()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

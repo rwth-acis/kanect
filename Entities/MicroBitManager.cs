@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using Windows.Devices.Bluetooth.GenericAttributeProfile;
@@ -31,7 +32,7 @@ namespace KonnectUI.Entities
             {"Magnetometer Data", new Guid("E95DFB11251D470AA062FA1922DFA9A8")},
             {"Magnetometer Period", new Guid("E95D386C251D470AA062FA1922DFA9A8")},
             {"Magnetometer Bearing", new Guid("E95D9715251D470AA062FA1922DFA9A8")},
-            { "Button Service", new Guid("E95D9882251D470AA062FA1922DFA9A8")},
+            {"Button Service", new Guid("E95D9882251D470AA062FA1922DFA9A8")},
             {"Button A State", new Guid("E95DDA90251D470AA062FA1922DFA9A8")},
             {"Button B State", new Guid("E95DDA91251D470AA062FA1922DFA9A8")},
             {"Event Service", new Guid("E95D93AF251D470AA062FA1922DFA9A8") },
@@ -163,13 +164,26 @@ namespace KonnectUI.Entities
         public async override void BeginReading()
         {
             Boolean response = await bluetoothLE.PerformAction(selectedCharacteristic, ValueChanged);
-            Status = "Transmiting";
         }
 
         private void ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
         {
+            LastTransmissionTick = CurrentTick;
             var reader = DataReader.FromBuffer(args.CharacteristicValue);
-            Publish("/i5/micro:bit/" + Index, $"{reader.ReadUInt16()},{reader.ReadUInt16()},{reader.ReadUInt16()}");
+            if (Status == "Transmitting")
+            {
+
+                Publish("/i5/micro:bit/" + Index, $"{reader.ReadInt16()},{reader.ReadUInt16()},{reader.ReadUInt16()}");
+            } else
+            {
+                Publish("/i5/micro:bit/" + Index, "end");
+            }
+        }
+
+        public override void EndReading()
+        {
+            bluetoothLE.RemoveTransmission(selectedCharacteristic, ValueChanged);
+            Publish("/i5/micro:bit/" + Index, "end");
         }
     }
 }

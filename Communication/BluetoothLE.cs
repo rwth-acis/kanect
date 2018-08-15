@@ -71,6 +71,11 @@ namespace KonnectUI.Communication
             return true;
         }
 
+        public void RemoveTransmission(GattCharacteristic characteristic, TypedEventHandler<GattCharacteristic, GattValueChangedEventArgs> OnValueChanged)
+        {
+            characteristic.ValueChanged -= OnValueChanged;
+        }
+
         public void SearchSensor()
         {
             deviceWatcher =

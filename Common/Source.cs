@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Foundation;
 using System.Net;
+using System.Threading;
 
 namespace KonnectUI.Common
 {
@@ -18,6 +19,8 @@ namespace KonnectUI.Common
         public string Status { get { return _Status; } set { _Status = value; } }
         public string Index { get { return _Index; } set { _Index = value; } }
         public string Address { get { return _Address; } set { _Address = value; } }
+        public int CurrentTick { get; set; }
+        public int LastTransmissionTick { get; set; }
 
         public EventHandler<ConnectEventArgs> OnConnect;
         public EventHandler<ConnectEventArgs> OnDisconnect;
@@ -26,6 +29,8 @@ namespace KonnectUI.Common
 
         abstract public void Connect();
         abstract public void BeginReading();
+
+        abstract public void EndReading();
 
         public void Publish(String topic, String data)
         {
@@ -36,6 +41,7 @@ namespace KonnectUI.Common
         {
             mQTTManager = new MQTTManager();
         }
+
 
         
 

@@ -24,30 +24,39 @@ namespace KonnectUI.Entities
 
             myoHub.MyoConnected += MyoConnected;
             myoHub.MyoDisconnected += MyoDisconnected;
+
+            
         }
 
         private void MyoDisconnected(object sender, MyoEventArgs e)
         {
+            Publish("/i5/myo/pose", "end");
+            Publish("/i5/myo/orientation", "end");
+            Publish("/i5/myo/full", "end");
+            Publish("/i5/myo/gyroscope", "end");
+            Publish("/i5/myo/accelerometer", "end");
+            Publish("/i5/myo/emg", "end");
             OnDisconnect(this, new ConnectEventArgs("Success"));
             streamData = false;
         }
 
         private void MyoConnected(object sender, MyoEventArgs e)
         {
-            OnConnect(this, new ConnectEventArgs("Success"));
+            Status = "Connected";
             e.Myo.AccelerometerDataAcquired += AccelerometerDataAcquired;
             e.Myo.SetEmgStreaming(true);
             e.Myo.EmgDataAcquired += EmgDataAcquired;
             e.Myo.GyroscopeDataAcquired += GyroscopeDataAcquired;
             e.Myo.OrientationDataAcquired += OrientationDataAcquired;
             e.Myo.PoseChanged += PoseChanged;
+            OnConnect(this, new ConnectEventArgs("Success"));
         }
 
         private void PoseChanged(object sender, PoseEventArgs e)
         {
             if(streamData == true)
             {
-                Publish("/i5/myo/pose", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString() + "," + e.Myo.Pose.ToString());
+                Publish("/i5/myo/pose", e.Myo.Pose.ToString());
             }
         }
 
@@ -61,17 +70,18 @@ namespace KonnectUI.Entities
                 var pitch = (int)((e.Pitch + PI) / (PI * 2.0f) * 10);
                 var yaw = (int)((e.Yaw + PI) / (PI * 2.0f) * 10);
 
-                Publish("/i5/myo/orientation", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString() + "," + roll.ToString() + "," + pitch.ToString() + "," + yaw.ToString());
+                Publish("/i5/myo/orientation", roll.ToString() + "," + pitch.ToString() + "," + yaw.ToString());
             }
         }
 
         private void GyroscopeDataAcquired(object sender, GyroscopeDataEventArgs e)
         {
+            LastTransmissionTick = CurrentTick;
             if (streamData == true)
             {
-                
-                Publish("/i5/myo/full", EMG + "," + Acc + "," + DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString() + "," + e.Gyroscope.X + "," + e.Gyroscope.Y.ToString() + "," + e.Gyroscope.Z.ToString());
-                Publish("/i5/myo/gyroscope", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString() + "," + e.Gyroscope.X + "," + e.Gyroscope.Y.ToString() + "," + e.Gyroscope.Z.ToString());
+                //"," + DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString() + "," 
+                Publish("/i5/myo/full", EMG + Acc + "," + e.Gyroscope.X + "," + e.Gyroscope.Y.ToString() + "," + e.Gyroscope.Z.ToString());
+                Publish("/i5/myo/gyroscope", e.Gyroscope.X + "," + e.Gyroscope.Y.ToString() + "," + e.Gyroscope.Z.ToString());
             }
         }
 
@@ -82,33 +92,43 @@ namespace KonnectUI.Entities
                 string tmpEmg = "";
                 for (var i = 0; i < 8; ++i)
                 {
-                    tmpEmg += "," + e.EmgData.GetDataForSensor(i).ToString();
+                    tmpEmg += e.EmgData.GetDataForSensor(i).ToString() + ",";
                 }
 
 
-                EMG = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString() + tmpEmg;
-                Publish("/i5/myo/emg", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString() + tmpEmg);
+                EMG = /*DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString() +*/ tmpEmg;
+                Publish("/i5/myo/emg", tmpEmg.Substring(0, tmpEmg.Length - 1));
             }
         }
 
         private void AccelerometerDataAcquired(object sender, AccelerometerDataEventArgs e)
-        {
+        {            
             if (streamData == true)
             {
-                Acc = DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString() + "," + e.Accelerometer.X.ToString() + "," + e.Accelerometer.Y.ToString() + "," + e.Accelerometer.Z.ToString();
-                Publish("/i5/myo/accelerometer", DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString() + "," + e.Accelerometer.X.ToString() + "," + e.Accelerometer.Y.ToString() + "," + e.Accelerometer.Z.ToString());
+                Acc = /*DateTimeOffset.UtcNow.ToUnixTimeSeconds().ToString() + "," +*/ e.Accelerometer.X.ToString() + "," + e.Accelerometer.Y.ToString() + "," + e.Accelerometer.Z.ToString();
+                Publish("/i5/myo/accelerometer", e.Accelerometer.X.ToString() + "," + e.Accelerometer.Y.ToString() + "," + e.Accelerometer.Z.ToString());
             }
         }
 
         public override void Connect()
         {
             myoChannel.StartListening();
-        }       
+        }
 
         public override void BeginReading()
         {
             streamData = true;
         }
 
+        public override void EndReading()
+        {
+            Publish("/i5/myo/pose", "end");
+            Publish("/i5/myo/orientation", "end");
+            Publish("/i5/myo/full", "end");
+            Publish("/i5/myo/gyroscope", "end");
+            Publish("/i5/myo/accelerometer", "end");
+            Publish("/i5/myo/emg", "end");
+            streamData = false;
+        }
     }
 }

@@ -22,6 +22,8 @@ namespace KonnectUI.Common
             mqttClient.Connect(Guid.NewGuid().ToString());
         }
 
+
+
         public static void TestConnection()
         {
             try

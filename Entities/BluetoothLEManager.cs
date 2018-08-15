@@ -129,7 +129,7 @@ namespace KonnectUI.Entities
         public async override void BeginReading()
         {
             Boolean response = await bluetoothLE.PerformAction(selectedCharacteristic, ValueChanged);
-            Status = "Transmiting";
+            Status = "Transmitting";
         }
 
         private void ValueChanged(GattCharacteristic sender, GattValueChangedEventArgs args)
@@ -137,6 +137,11 @@ namespace KonnectUI.Entities
             var reader = DataReader.FromBuffer(args.CharacteristicValue);
             Console.WriteLine(reader.ToString());
             //Publish("/i5/ble/" + Index, $"{reader.ReadUInt16()},{reader.ReadUInt16()},{reader.ReadUInt16()}");
+        }
+
+        public override void EndReading()
+        {
+            
         }
     }
 }

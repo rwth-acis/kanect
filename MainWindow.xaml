@@ -43,7 +43,7 @@
             </Grid.RowDefinitions>
 
             <TextBlock Margin="12, 12" Grid.Row="0" Text="Devices"  Foreground="White" TextAlignment="Left" FontSize="40" FontWeight="Thin"  />
-            <ListView BorderThickness="0" Name="listDevices" Background="Crimson" Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch" ItemTemplate="{StaticResource DeviceItem}" SelectionChanged="ListDevices_SelectionChanged"></ListView>
+            <ListView BorderThickness="0" Name="listDevices" Background="Crimson" Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" HorizontalAlignment="Stretch" Margin="0,0,0,0" VerticalAlignment="Stretch" ItemTemplate="{StaticResource DeviceItem}" SelectionChanged="ListDevices_SelectionChanged" MouseLeftButtonUp="listDevices_MouseLeftButtonUp"></ListView>
         </Grid>
        
         <Grid Grid.Column="1" Grid.Row="1" >

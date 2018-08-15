@@ -46,6 +46,10 @@ namespace KonnectUI.Entities.Bluetooth
             var reader = DataReader.FromBuffer(args.CharacteristicValue);
             Console.WriteLine($"x:{reader.ReadUInt16() / 1000}, y: {reader.ReadUInt16() / 1000}, z: {reader.ReadUInt16() / 1000}");
         }
-        
+
+        public override void EndReading()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -92,5 +92,10 @@ namespace KonnectUI.Entities
                 }
             }
         }
+
+        public override void EndReading()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
