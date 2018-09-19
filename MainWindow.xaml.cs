@@ -269,6 +269,7 @@ namespace KonnectUI
 
         private void StartTransmission(int index, string status)
         {
+            addedDevices[index].CurrentTick = Tick;
             addedDevices[index].BeginReading();
             ChangeStatus(index, status);
         }
