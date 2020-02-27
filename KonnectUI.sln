@@ -1,14 +1,14 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27703.2035
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29519.87
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "KonnectUI", "KonnectUI.csproj", "{D1BA6E9C-C1D0-4B7E-85AB-97DCD6F82FC5}"
 	ProjectSection(ProjectDependencies) = postProject
 		{B075C7E9-FE48-4508-B44C-1A259BCC8B22} = {B075C7E9-FE48-4508-B44C-1A259BCC8B22}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyoSharp", "..\MyoSharp\MyoSharp\MyoSharp.csproj", "{B075C7E9-FE48-4508-B44C-1A259BCC8B22}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MyoSharp", "..\MyoSharpWithoutContracts\MyoSharp\MyoSharp.csproj", "{B075C7E9-FE48-4508-B44C-1A259BCC8B22}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
