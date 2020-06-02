@@ -1,13 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Text;
-using System.Threading.Tasks;
+
+
 using uPLibrary.Networking.M2Mqtt;
-using uPLibrary.Networking.M2Mqtt.Messages;
 using uPLibrary.Networking.M2Mqtt.Exceptions;
+
 using System.Windows;
+using System.Text;
 
 namespace KonnectUI.Common
 {
@@ -18,7 +16,7 @@ namespace KonnectUI.Common
 
         public MQTTManager()
         {
-            mqttClient = new MqttClient("iot.eclipse.org");
+            mqttClient = new MqttClient("mqtt.eclipse.org");
             mqttClient.Connect(Guid.NewGuid().ToString());
         }
 
@@ -28,7 +26,7 @@ namespace KonnectUI.Common
         {
             try
             {
-                MqttClient mqttClient = new MqttClient("iot.eclipse.org");
+                MqttClient mqttClient = new MqttClient("mqtt.eclipse.org");
                 mqttClient.Connect(Guid.NewGuid().ToString());
                 mqttClient.Disconnect();
             }
